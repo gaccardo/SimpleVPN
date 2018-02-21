@@ -12,3 +12,10 @@ user_schema = app.api.model('User', {
     'email': fields.String(),
     'certificate': fields.String()
 })
+
+certificate_schema = app.api.model('Certificate', {
+    'id': fields.Integer(),
+    'name': fields.String(),
+    'valid': fields.Boolean(),
+    'user_id': fields.Integer()
+})
