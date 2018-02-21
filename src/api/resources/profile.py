@@ -5,6 +5,8 @@ from api.app import get_app
 
 from api.resources.schema import profile_schema
 from model.profile import Profile as DBProfile
+from api.resources.schema import rule_schema
+from model.rule import Rule as DBRule
 
 
 app = get_app()
@@ -84,3 +86,15 @@ class Profile(Resource):
         app.db.session.merge(profile)
         app.db.session.commit()
         return marshal(profile, profile_schema), 200
+
+
+@ns.route('/<int:id>/rule')
+class RuleByProfile(Resource):
+
+    @ns.doc('list rules by profile')
+    @app.api.marshal_with(rule_schema, as_list=True)
+    def get(self, id):
+        rules = app.db.session.query(DBRule).filter(
+            DBRule.profile_id==id
+        ).all()
+        return marshal(rules, rule_schema), 200

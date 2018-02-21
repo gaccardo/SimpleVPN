@@ -5,6 +5,7 @@ from api.app import get_app
 
 from api.resources.schema import rule_schema
 from model.rule import Rule as DBRule
+from model.profile import Profile as DBProfile
 
 
 app = get_app()
@@ -32,6 +33,11 @@ class RuleList(Resource):
     )
     def post(self):
         new_rule = DBRule(**request.json)
+        profile = app.db.session.query(DBProfile).filter(
+            DBProfile.id==request.json['profile_id']
+        ).first()
+        if profile is None:
+            errors.abort(code=404, message="Profile Not Found")
         app.db.session.add(new_rule)
         try:
             app.db.session.commit()
@@ -59,8 +65,8 @@ class Rule(Resource):
         }
     )
     def delete(self, id):
-        rule = app.db.session.query(DBProfile).get(id)
-        if profile is None:
+        rule = app.db.session.query(DBRule).get(id)
+        if rule is None:
             errors.abort(code=404, message="Rule Not Found")
         app.db.session.delete(rule)
         app.db.session.commit()
