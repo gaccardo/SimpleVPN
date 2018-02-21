@@ -97,6 +97,6 @@ class Rule(Resource):
 class RuleApply(Resource):
 
     @ns.doc('applu rules')
-    def get(self):
+    def post(self):
         iptables.apply_rules(app.db.session)
         return 200
