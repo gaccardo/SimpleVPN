@@ -24,3 +24,12 @@ profile_schema = app.api.model('Profile', {
     'id': fields.Integer(),
     'name': fields.String()
 })
+
+rule_schema = app.api.model('Rule', {
+    'id': fields.Integer(),
+    'name': fields.String(),
+    'cidr': fields.String(),
+    'proto': fields.String(),
+    'port': fields.String(),
+    'profile_id': fields.Integer()
+})

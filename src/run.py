@@ -1,4 +1,4 @@
-from api.resources import user, certificate, profile
+from api.resources import user, certificate, profile, rule
 
 from api.app import get_app
 

@@ -21,7 +21,8 @@ def upgrade():
         sa.Column('name', sa.String(256), nullable=True),
         sa.Column('cidr', sa.String(256), nullable=True, default="0.0.0.0/0"),
         sa.Column('proto', sa.String(256), nullable=True, default="tcp"),
-        sa.Column('port', sa.String(256), nullable=False)
+        sa.Column('port', sa.String(256), nullable=False),
+        sa.Column('profile_id', sa.Integer, sa.ForeignKey('profile.id'))
     )
 
 
