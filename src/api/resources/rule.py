@@ -90,3 +90,11 @@ class Rule(Resource):
         app.db.session.merge(rule)
         app.db.session.commit()
         return marshal(rule, rule_schema), 200
+
+
+@ns.route('/apply')
+class RuleApply(Resource):
+
+    @ns.doc('applu rules')
+    def get(self):
+        return 200
