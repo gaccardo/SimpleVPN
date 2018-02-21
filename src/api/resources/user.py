@@ -57,3 +57,36 @@ class User(Resource):
         if not user:
             errors.abort(code=404, message="User not found")
         return marshal(user, user_schema), 200
+
+    @ns.doc('delete user')
+    @app.api.doc(
+        responses={
+            200: 'Success',
+            404: 'Not Found'
+        }
+    )
+    def delete(self, id):
+        user = app.db.session.query(DBUser).get(id)
+        if not user:
+            errors.abort(code=404, message="User not found")
+        app.db.session.delete(user)
+        app.db.session.commit()
+        return {'msg': 'user deleted'}
+
+    @ns.doc('update user')
+    @app.api.marshal_with(user_schema)
+    @app.api.expect(user_schema, validate=True)
+    @app.api.doc(
+        responses={
+            200: 'Success',
+            404: 'Not Found'
+        }
+    )
+    def put(self, id):
+        user = app.db.session.query(DBUser).get(id)
+        if not user:
+            errors.abort(code=404, message="User not found")
+        for k,v in request.json.iteritems():
+            setattr(user, k, v)
+        app.db.session.merge(user)
+        app.db.session.commit()
