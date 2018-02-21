@@ -6,6 +6,7 @@ from api.app import get_app
 from api.resources.schema import certificate_schema, user_schema
 from model.certificate import Certificate as DBCertificate
 from model.user import User as DBUser
+from api.tools import openvpn
 
 
 app = get_app()
@@ -28,18 +29,21 @@ class CertificateList(Resource):
         responses={
             200: 'Success',
             404: 'Not Found',
-            409: 'Conflict',
+            409: 'Already Exists',
             500: 'Internal Server Error'
         }
     )
     def post(self):
-        new_certificate = DBCertificate(**request.json)
-        app.db.session.add(new_certificate)
-        try:
-            app.db.session.commit()
-        except:
-            errors.abort(code=409, message="User already exists")
-        return 200
+        if openvpn.generate_certificate(request.json):
+            new_certificate = DBCertificate(**request.json)
+            app.db.session.add(new_certificate)
+            try:
+                app.db.session.commit()
+            except:
+                errors.abort(code=409, message="Certificate already exists")
+            return 200
+        else:
+            errors.abort(code=409, message="Certificate already exists")
 
 
 @ns.route('/<int:id>')
