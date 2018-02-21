@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  name: add service user: svpn
+  tasks:
+
+    - name: add svpn service user
+      user:
+        name: svpn
+        comment: "Simple VPN"

@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  name: install simple VPN virtualenv and requirements
+  tasks:
+
+    - name: ensure virtualenv folder exists
+      file:
+        path: /usr/local/svpn/venvs/
+        owner: svpn
+        state: directory
+
+    - name: install virtualenv
+      pip:
+        virtualenv: /usr/local/svpn/venvs/simplevpn
+        requirements: /opt/simplevpn/etc/requirements.txt
+      become: yes
+      become_user: svpn
+
+    - name: install some items
+      pip:
+        name: "{{ item }}"
+        virtualenv: /usr/local/svpn/venvs/simplevpn
+      with_items:
+        - gunicorn
+        - alembic
+        # - celery
+      become: yes
+      become_user: svpn

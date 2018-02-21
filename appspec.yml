@@ -1,0 +1,13 @@
+---
+os: linux
+version: 0.0
+files:
+  - source: /
+    destination: /opt/simplevpn
+hooks:
+  AfterInstall:
+    - location: deploy/install.sh
+      runas: root
+  ValidateService:
+    - location: deploy/validate.sh
+      runas: root
