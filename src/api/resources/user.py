@@ -90,3 +90,4 @@ class User(Resource):
             setattr(user, k, v)
         app.db.session.merge(user)
         app.db.session.commit()
+        return marshal(user, user_schema), 200
