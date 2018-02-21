@@ -18,7 +18,7 @@ def upgrade():
     op.create_table(
         'certificate',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('name', sa.String, nullable=False),
+        sa.Column('name', sa.String(256), nullable=False),
         sa.Column('valid', sa.Boolean, default=True),
         sa.Column('user_id', sa.Integer, sa.ForeignKey('user.id'))
     )

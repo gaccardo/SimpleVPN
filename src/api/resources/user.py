@@ -1,10 +1,17 @@
-from flask import request
+import os
+import tempfile
+import shutil
+
+from flask import request, send_file
 from flask_restplus import Resource, fields, marshal, errors
 
 from api.app import get_app
-
-from api.resources.schema import user_schema
+from api.resources.schema import user_schema, certificate_schema
 from model.user import User as DBUser
+from model.certificate import Certificate as DBCertificate
+
+from api.tools.openvpn import generate_client_config
+
 
 app = get_app()
 ns = app.api.namespace('user', description='User operations')
@@ -91,3 +98,72 @@ class User(Resource):
         app.db.session.merge(user)
         app.db.session.commit()
         return marshal(user, user_schema), 200
+
+
+@ns.route('/<int:id>/certificates')
+class CertificatesByUser(Resource):
+
+    @ns.doc('list certificates by user')
+    @app.api.marshal_with(certificate_schema, as_list=True)
+    def get(self, id):
+        certificates = app.db.session.query(DBCertificate).filter(
+            DBCertificate.user_id==id
+        ).all()
+        return marshal(certificates, certificate_schema), 200
+
+
+@ns.route('/<int:id>/certificate/<int:certificate_id>/download')
+class DownloadCertificate(Resource):
+
+    @ns.doc('list certificates by user')
+    def get(self, id, certificate_id):
+        certificate = app.db.session.query(DBCertificate).filter(
+            DBCertificate.id==certificate_id
+        ).first()
+        temorary_certificates_folder = tempfile.mkdtemp(dir="/tmp")
+        files_to_copy = [
+            "/etc/openvpn/keys/{}.crt".format(certificate.name),
+            "/etc/openvpn/keys/{}.key".format(certificate.name),
+            "/etc/openvpn/keys/ca.crt"
+        ]
+        for ff in files_to_copy:
+            shutil.copy2(ff, temorary_certificates_folder)
+
+        generate_client_config(certificate.name, temorary_certificates_folder)
+        shutil.make_archive(
+            "/tmp/{}".format(certificate.name),
+            "zip",
+            temorary_certificates_folder
+        )
+        shutil.rmtree(temorary_certificates_folder)
+        return send_file(
+            "/tmp/{}.zip".format(certificate.name),
+            attachment_filename='{}.zip'.format(certificate.name)
+        )
+
+
+@ns.route('/<int:id>/certificate/<int:certificate_id>/send')
+class SendCertificate(Resource):
+
+    @ns.doc('send certificate to user')
+    def get(self, id, certificate_id):
+        certificate = app.db.session.query(DBCertificate).filter(
+            DBCertificate.id==certificate_id
+        ).first()
+        temorary_certificates_folder = tempfile.mkdtemp(dir="/tmp")
+        files_to_copy = [
+            "/etc/openvpn/keys/{}.crt".format(certificate.name),
+            "/etc/openvpn/keys/{}.key".format(certificate.name),
+            "/etc/openvpn/keys/ca.crt"
+        ]
+        for ff in files_to_copy:
+            shutil.copy2(ff, temorary_certificates_folder)
+
+        generate_client_config(certificate.name, temorary_certificates_folder)
+        shutil.make_archive(
+            "/tmp/{}".format(certificate.name),
+            "zip",
+            temorary_certificates_folder
+        )
+        shutil.rmtree(temorary_certificates_folder)
+        # send to user
