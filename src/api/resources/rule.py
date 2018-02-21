@@ -6,6 +6,7 @@ from api.app import get_app
 from api.resources.schema import rule_schema
 from model.rule import Rule as DBRule
 from model.profile import Profile as DBProfile
+from api.tools import iptables
 
 
 app = get_app()
@@ -97,4 +98,5 @@ class RuleApply(Resource):
 
     @ns.doc('applu rules')
     def get(self):
+        iptables.apply_rules(app.db.session)
         return 200

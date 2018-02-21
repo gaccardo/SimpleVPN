@@ -26,3 +26,7 @@ class Rule(Base):
         return "Rule(name={}, port={}, p_id={}, cidr={}, proto={})".format(
             self.name, self.port, self.profile_id, self.cidr, self.proto
         )
+
+    def as_iptables(self):
+        return "-p {} -d {} --dport {} -j ACCEPT".format(
+            self.proto, self.cidr, self.port)
