@@ -115,11 +115,24 @@ class CertificatesByUser(Resource):
 @ns.route('/<int:id>/certificate/<int:certificate_id>/download')
 class DownloadCertificate(Resource):
 
-    @ns.doc('list certificates by user')
+    @ns.doc('download certificates by user')
+    @app.api.doc(
+        responses={
+            200: 'Success',
+            404: 'Certificate Not Found',
+            409: 'Certificate Is Revoked'
+        }
+    )
     def get(self, id, certificate_id):
         certificate = app.db.session.query(DBCertificate).filter(
             DBCertificate.id==certificate_id
         ).first()
+        if certificate is None:
+            errors.abort(code=404, message="Certicate Not Found")
+
+        if not certificate.valid:
+            errors.abort(code=409, message="Certicate is Revoked")
+
         temorary_certificates_folder = tempfile.mkdtemp(dir="/tmp")
         files_to_copy = [
             "/etc/openvpn/keys/{}.crt".format(certificate.name),
@@ -138,7 +151,8 @@ class DownloadCertificate(Resource):
         shutil.rmtree(temorary_certificates_folder)
         return send_file(
             "/tmp/{}.zip".format(certificate.name),
-            attachment_filename='{}.zip'.format(certificate.name)
+            attachment_filename='{}.zip'.format(certificate.name),
+            as_attachment=True
         )
 
 
