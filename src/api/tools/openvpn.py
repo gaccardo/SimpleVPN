@@ -30,7 +30,8 @@ def generate_certificate(certificate_data):
     # KEY_DIR /etc/openvpn/openvpn-ca/
 
     # THIS IS UGLY, IMPROVE IT
-    os.system(os.path.join(app.root_path, 'tools', 'openvpn.sh'))
+    helper_path = os.path.join(app.root_path, 'tools', 'openvpn.sh')
+    os.system("{} {}".format(helper_path, certificate_data['name']))
 
     return False
 
