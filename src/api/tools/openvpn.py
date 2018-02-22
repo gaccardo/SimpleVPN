@@ -4,6 +4,7 @@ from mako.template import Template
 
 from api.app import get_app
 
+
 def generate_certificate(certificate_data):
     return True
 

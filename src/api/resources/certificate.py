@@ -39,7 +39,7 @@ class CertificateList(Resource):
             app.db.session.add(new_certificate)
             try:
                 app.db.session.commit()
-            except:
+            except, e:
                 errors.abort(code=409, message="Certificate already exists")
             return 200
         else:
@@ -95,6 +95,6 @@ class CertificateUser(Resource):
     )
     def get(self, user_id):
         certificates = app.db.session.query(DBCertificate).filter(
-            DBCertificate.user_id==user_id
+            DBCertificate.user_id == user_id
         ).all()
         return marshal(certificates, certificate_schema), 200

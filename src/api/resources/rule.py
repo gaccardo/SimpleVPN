@@ -35,14 +35,14 @@ class RuleList(Resource):
     def post(self):
         new_rule = DBRule(**request.json)
         profile = app.db.session.query(DBProfile).filter(
-            DBProfile.id==request.json['profile_id']
+            DBProfile.id == request.json['profile_id']
         ).first()
         if profile is None:
             errors.abort(code=404, message="Profile Not Found")
         app.db.session.add(new_rule)
         try:
             app.db.session.commit()
-        except:
+        except, e:
             errors.abort(code=409, message="Rule alredy exists")
         return 200
 
@@ -86,7 +86,7 @@ class Rule(Resource):
         rule = app.db.session.query(DBRule).get(id)
         if profile is None:
             errors.abort(code=404, message="Rule Not Found")
-        for k,v in request.json.iteritems():
+        for k, v in request.json.iteritems():
             setattr(rule, k, v)
         app.db.session.merge(rule)
         app.db.session.commit()

@@ -13,7 +13,6 @@ class Rule(Base):
     port = Column(String(256), nullable=False)
     profile_id = Column(ForeignKey("profile.id"), nullable=False)
 
-
     def __init__(self, port, profile_id, name=None, cidr="0.0.0.0/0",
                  proto="tcp"):
         self.port = port

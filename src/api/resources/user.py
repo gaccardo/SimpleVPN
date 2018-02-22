@@ -26,7 +26,6 @@ class UserList(Resource):
         users = app.db.session.query(DBUser).all()
         return marshal(users, user_schema), 200
 
-
     @ns.doc('post user')
     @app.api.expect(user_schema, validate=True)
     @app.api.doc(
@@ -43,7 +42,7 @@ class UserList(Resource):
 
         try:
             app.db.session.commit()
-        except:
+        except, e:
             errors.abort(code=409, message="User already exists")
         return 200
 
@@ -93,7 +92,7 @@ class User(Resource):
         user = app.db.session.query(DBUser).get(id)
         if not user:
             errors.abort(code=404, message="User not found")
-        for k,v in request.json.iteritems():
+        for k, v in request.json.iteritems():
             setattr(user, k, v)
         app.db.session.merge(user)
         app.db.session.commit()
@@ -107,7 +106,7 @@ class CertificatesByUser(Resource):
     @app.api.marshal_with(certificate_schema, as_list=True)
     def get(self, id):
         certificates = app.db.session.query(DBCertificate).filter(
-            DBCertificate.user_id==id
+            DBCertificate.user_id == id
         ).all()
         return marshal(certificates, certificate_schema), 200
 
@@ -125,7 +124,7 @@ class DownloadCertificate(Resource):
     )
     def get(self, id, certificate_id):
         certificate = app.db.session.query(DBCertificate).filter(
-            DBCertificate.id==certificate_id
+            DBCertificate.id == certificate_id
         ).first()
         if certificate is None:
             errors.abort(code=404, message="Certicate Not Found")
@@ -162,7 +161,7 @@ class SendCertificate(Resource):
     @ns.doc('send certificate to user')
     def get(self, id, certificate_id):
         certificate = app.db.session.query(DBCertificate).filter(
-            DBCertificate.id==certificate_id
+            DBCertificate.id == certificate_id
         ).first()
         temorary_certificates_folder = tempfile.mkdtemp(dir="/tmp")
         files_to_copy = [

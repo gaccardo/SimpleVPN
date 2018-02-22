@@ -37,7 +37,7 @@ class ProfileList(Resource):
         app.db.session.add(new_profile)
         try:
             app.db.session.commit()
-        except:
+        except, e:
             errors.abort(code=409, message="Profiles alredy exists")
         return 200
 
@@ -81,7 +81,7 @@ class Profile(Resource):
         profile = app.db.session.query(DBProfile).get(id)
         if profile is None:
             errors.abort(code=404, message="Profile Not Found")
-        for k,v in request.json.iteritems():
+        for k, v in request.json.iteritems():
             setattr(profile, k, v)
         app.db.session.merge(profile)
         app.db.session.commit()
@@ -95,6 +95,6 @@ class RuleByProfile(Resource):
     @app.api.marshal_with(rule_schema, as_list=True)
     def get(self, id):
         rules = app.db.session.query(DBRule).filter(
-            DBRule.profile_id==id
+            DBRule.profile_id == id
         ).all()
         return marshal(rules, rule_schema), 200
