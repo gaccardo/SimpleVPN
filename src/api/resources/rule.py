@@ -42,7 +42,7 @@ class RuleList(Resource):
         app.db.session.add(new_rule)
         try:
             app.db.session.commit()
-        except, e:
+        except e:
             errors.abort(code=409, message="Rule alredy exists")
         return 200
 

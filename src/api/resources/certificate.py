@@ -39,11 +39,12 @@ class CertificateList(Resource):
             app.db.session.add(new_certificate)
             try:
                 app.db.session.commit()
-            except, e:
+            except e:
                 errors.abort(code=409, message="Certificate already exists")
-            return 200
         else:
-            errors.abort(code=409, message="Certificate already exists")
+            errors.abort(code=500, message="Error creating the certificate")
+
+        return marshal(new_certificate, certificate_schema), 200
 
 
 @ns.route('/<int:id>')

@@ -1,16 +1,41 @@
 import os
 
 from mako.template import Template
+from flask_restplus import errors
 
 from api.app import get_app
+from model.user import User as DBUser
+from model.certificate import Certificate as DBCertificate
+
+app = get_app()
+
+
+def certificate_exists(certificate_data):
+    certificate = app.db.session.query(DBCertificate).filter(
+        DBCertificate.name == certificate_data['name']
+    ).first()
+    return certificate is not None
 
 
 def generate_certificate(certificate_data):
-    return True
+    user = app.db.session.query(DBUser).get(certificate_data['user_id'])
+
+    if user is None:
+        errors.abort(code=404, message="User not found")
+
+    if certificate_exists(certificate_data):
+        errors.abort(code=409, message="Certificate already exists")
+
+    # KEY_CONFIG /etc/openvpn/openvpn-ca/openssl-1.0.0.cnf
+    # KEY_DIR /etc/openvpn/openvpn-ca/
+
+    # THIS IS UGLY, IMPROVE IT
+    os.system(os.path.join(app.root_path, 'tools', 'openvpn.sh'))
+
+    return False
 
 
 def generate_client_config(certificate, dst_folder):
-    app = get_app()
     template_file = os.path.join(app.root_path, 'tools', 'templates',
                                  'client.conf')
     client_template = Template(filename=template_file)

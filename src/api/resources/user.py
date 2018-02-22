@@ -42,7 +42,7 @@ class UserList(Resource):
 
         try:
             app.db.session.commit()
-        except, e:
+        except e:
             errors.abort(code=409, message="User already exists")
         return 200
 
