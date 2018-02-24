@@ -1,3 +1,4 @@
+# import iptc
 from sqlalchemy import Column, DateTime, String, Integer, UniqueConstraint, \
     Boolean, Enum, ForeignKey
 
@@ -20,6 +21,7 @@ class Rule(Base):
         self.name = name
         self.cidr = cidr
         self.proto = proto
+        self.iptables = self.__as_iptables_object()
 
     def __repr__(self):
         return "Rule(name={}, port={}, p_id={}, cidr={}, proto={})".format(
@@ -29,3 +31,13 @@ class Rule(Base):
     def as_iptables(self):
         return "-p {} -d {} --dport {} -j ACCEPT".format(
             self.proto, self.cidr, self.port)
+
+    def __as_iptables_object(self):
+        # rule = iptc.Rule()
+        # rule.dst = self.cidr
+        # rule.protocol = self.proto
+        # match = iptc.Match(rule, self.proto)
+        # match.dport = self.port
+        # rule.add_match(match)
+        # return rule
+        return None

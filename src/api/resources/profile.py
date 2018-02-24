@@ -37,7 +37,7 @@ class ProfileList(Resource):
         app.db.session.add(new_profile)
         try:
             app.db.session.commit()
-        except e:
+        except:
             errors.abort(code=409, message="Profiles alredy exists")
         return 200
 
