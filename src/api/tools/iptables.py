@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 
 from model.rule import Rule as DBRule
@@ -39,6 +40,7 @@ def apply_to_os(rules_buffer):
 
     os.system("chmod a+x {}".format(rules_file))
     os.system(rules_file)
+    shutil.rmtree(rules_file)
 
 
 def apply_rules(session):
