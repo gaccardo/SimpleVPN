@@ -9,8 +9,7 @@ user_schema = app.api.model('User', {
     'id': fields.Integer(),
     'username': fields.String(),
     'fullname': fields.String(),
-    'email': fields.String(),
-    'certificate': fields.String()
+    'email': fields.String()
 })
 
 certificate_schema = app.api.model('Certificate', {
