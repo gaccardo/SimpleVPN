@@ -16,7 +16,8 @@ certificate_schema = app.api.model('Certificate', {
     'id': fields.Integer(),
     'name': fields.String(),
     'valid': fields.Boolean(),
-    'user_id': fields.Integer()
+    'user_id': fields.Integer(),
+    'ip': fields.String()
 })
 
 profile_schema = app.api.model('Profile', {

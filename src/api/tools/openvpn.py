@@ -6,6 +6,7 @@ from flask_restplus import errors
 from api.app import get_app
 from model.user import User as DBUser
 from model.certificate import Certificate as DBCertificate
+import settings
 
 app = get_app()
 
@@ -18,6 +19,9 @@ def certificate_exists(certificate_data):
 
 
 def generate_certificate(certificate_data):
+    if not settings.OPENVPN_CREATE_CERT:
+        return True
+
     user = app.db.session.query(DBUser).get(certificate_data['user_id'])
 
     if user is None:
@@ -45,3 +49,12 @@ def generate_client_config(certificate, dst_folder):
     config_file_path = os.path.join(dst_folder, 'client.conf')
     with open(config_file_path, 'w') as config_file:
         config_file.write(config)
+
+
+def get_ip_db(ccd):
+    # openvpn ccd file
+    return ""
+
+
+def assign_ip_address(new_certificate):
+    return "0.0.0.0/0"

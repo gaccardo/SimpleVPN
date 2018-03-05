@@ -10,11 +10,13 @@ class Certificate(Base):
     name = Column(String(256), nullable=False)
     valid = Column(Boolean, default=True)
     user_id = Column(ForeignKey("user.id"), nullable=False)
+    ip = Column(String(256), nullable=True)
 
-    def __init__(self, name, user_id, valid=True):
+    def __init__(self, name, user_id, valid=True, ip=None):
         self.name = name
         self.user_id = user_id
         self.valid = valid
+        self.ip = ip
 
     def __repr__(self):
         return "Certificate(id={}, name={})".format(

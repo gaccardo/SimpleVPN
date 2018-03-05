@@ -36,10 +36,11 @@ class CertificateList(Resource):
     def post(self):
         if openvpn.generate_certificate(request.json):
             new_certificate = DBCertificate(**request.json)
+            new_certificate.ip = openvpn.assign_ip_address(new_certificate)
             app.db.session.add(new_certificate)
             try:
                 app.db.session.commit()
-            except e:
+            except:
                 errors.abort(code=409, message="Certificate already exists")
         else:
             errors.abort(code=500, message="Error creating the certificate")
